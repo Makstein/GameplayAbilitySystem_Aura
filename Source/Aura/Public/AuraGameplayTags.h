@@ -30,6 +30,13 @@ public:
 	FGameplayTag Attributes_Secondary_CriticalDamage;
 	FGameplayTag Attributes_Secondary_CriticalResistance;
 
+	FGameplayTag InputTag_LMB;
+	FGameplayTag InputTag_RMB;
+	FGameplayTag InputTag_1;
+	FGameplayTag InputTag_2;
+	FGameplayTag InputTag_3;
+	FGameplayTag InputTag_4;
+
 private:
 	static FAuraGameplayTags GameplayTags;
 };
