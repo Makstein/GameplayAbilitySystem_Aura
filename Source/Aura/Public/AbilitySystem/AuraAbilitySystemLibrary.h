@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Data/CharacterClassInfo.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "UI/WidgetController/AttributeMenuController.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
@@ -22,4 +23,7 @@ public:
 
 	UFUNCTION(BlueprintPure, category = "AuraAbilitySystemLibrary|WidgetController")
 	static UAttributeMenuController* GetAttributeMenuController(const UObject* WorldContext);
+
+	UFUNCTION(BlueprintCallable, category = "AuraAbilitySystemLibrary|CharacterClassDefaults")
+	static void InitializeDefaultAttributes(const UObject* WorldContext, ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* Asc);
 };
