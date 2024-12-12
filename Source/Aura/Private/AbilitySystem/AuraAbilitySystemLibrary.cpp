@@ -43,7 +43,8 @@ UAttributeMenuController* UAuraAbilitySystemLibrary::GetAttributeMenuController(
 	return nullptr;
 }
 
-void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldContext, ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* Asc)
+void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldContext, ECharacterClass CharacterClass,
+                                                            float Level, UAbilitySystemComponent* Asc)
 {
 	const auto AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContext));
 	if (AuraGameMode == nullptr) return;
@@ -55,16 +56,32 @@ void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* World
 
 	auto PrimaryAttributeContextHandle = Asc->MakeEffectContext();
 	PrimaryAttributeContextHandle.AddSourceObject(AvatarActor);
-	const FGameplayEffectSpecHandle PrimaryAttributesSpecHandle = Asc->MakeOutgoingSpec(ClassDefaultInfo.PrimaryAttributes, Level, PrimaryAttributeContextHandle);
+	const FGameplayEffectSpecHandle PrimaryAttributesSpecHandle = Asc->MakeOutgoingSpec(
+		ClassDefaultInfo.PrimaryAttributes, Level, PrimaryAttributeContextHandle);
 	Asc->ApplyGameplayEffectSpecToSelf(*PrimaryAttributesSpecHandle.Data.Get());
 
 	auto SecondaryAttributeContextHandle = Asc->MakeEffectContext();
 	SecondaryAttributeContextHandle.AddSourceObject(AvatarActor);
-	const FGameplayEffectSpecHandle SecondaryAttributesSpecHandle = Asc->MakeOutgoingSpec(CharacterClassInfo->SecondaryAttributes, Level, SecondaryAttributeContextHandle);
+	const FGameplayEffectSpecHandle SecondaryAttributesSpecHandle = Asc->MakeOutgoingSpec(
+		CharacterClassInfo->SecondaryAttributes, Level, SecondaryAttributeContextHandle);
 	Asc->ApplyGameplayEffectSpecToSelf(*SecondaryAttributesSpecHandle.Data.Get());
 
 	auto VitalAttributeContextHandle = Asc->MakeEffectContext();
 	VitalAttributeContextHandle.AddSourceObject(AvatarActor);
-	const FGameplayEffectSpecHandle VitalAttributesSpecHandle = Asc->MakeOutgoingSpec(CharacterClassInfo->VitalAttributes, Level, VitalAttributeContextHandle);
+	const FGameplayEffectSpecHandle VitalAttributesSpecHandle = Asc->MakeOutgoingSpec(
+		CharacterClassInfo->VitalAttributes, Level, VitalAttributeContextHandle);
 	Asc->ApplyGameplayEffectSpecToSelf(*VitalAttributesSpecHandle.Data.Get());
+}
+
+void UAuraAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContext, UAbilitySystemComponent* Asc)
+{
+	const auto AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContext));
+	if (AuraGameMode == nullptr) return;
+
+	const auto CharacterClassInfo = AuraGameMode->CharacterClassInfo;
+	for (const auto AbilityClass : CharacterClassInfo->CommonAbilities)
+	{
+		auto AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
+		Asc->GiveAbility(AbilitySpec);
+	}
 }
