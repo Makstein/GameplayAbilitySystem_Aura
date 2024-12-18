@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 
+#include "AuraAbilityTypes.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "Game/AuraGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
@@ -46,10 +47,7 @@ UAttributeMenuController* UAuraAbilitySystemLibrary::GetAttributeMenuController(
 void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldContext, ECharacterClass CharacterClass,
                                                             float Level, UAbilitySystemComponent* Asc)
 {
-	const auto AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContext));
-	if (AuraGameMode == nullptr) return;
-
-	const auto CharacterClassInfo = AuraGameMode->CharacterClassInfo;
+	const auto CharacterClassInfo = GetCharacterClassInfo(WorldContext);
 	const auto ClassDefaultInfo = CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
 
 	const auto AvatarActor = Asc->GetAvatarActor();
@@ -75,13 +73,53 @@ void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* World
 
 void UAuraAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContext, UAbilitySystemComponent* Asc)
 {
-	const auto AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContext));
-	if (AuraGameMode == nullptr) return;
-
-	const auto CharacterClassInfo = AuraGameMode->CharacterClassInfo;
+	const auto CharacterClassInfo = GetCharacterClassInfo(WorldContext);
 	for (const auto AbilityClass : CharacterClassInfo->CommonAbilities)
 	{
 		auto AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
 		Asc->GiveAbility(AbilitySpec);
+	}
+}
+
+UCharacterClassInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContext)
+{
+	const auto AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContext));
+	if (AuraGameMode == nullptr) return nullptr;
+
+	return AuraGameMode->CharacterClassInfo;
+}
+
+bool UAuraAbilitySystemLibrary::IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const auto AuraEffectContext = static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return AuraEffectContext->IsBlockedHit();
+	}
+	return false;
+}
+
+bool UAuraAbilitySystemLibrary::IsCriticalHit(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const auto AuraEffectContext = static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return AuraEffectContext->IsCriticalHit();
+	}
+	return false;
+}
+
+void UAuraAbilitySystemLibrary::SetIsBlockedHit(FGameplayEffectContextHandle& EffectContextHandle, bool IsBlocked)
+{
+	if (auto AuraEffectContext = static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		AuraEffectContext->SetIsBlockedHit(IsBlocked);
+	}
+}
+
+void UAuraAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& EffectContextHandle,
+                                                 bool IsCritical)
+{
+	if (auto AuraEffectContext = static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		AuraEffectContext->SetIsCriticalHit(IsCritical);
 	}
 }
