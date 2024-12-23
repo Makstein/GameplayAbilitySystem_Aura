@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
+#include "AI/AuraAIController.h"
+#include "BehaviorTree/BehaviorTree.h"
 #include "Character/AuraCharacterBase.h"
 #include "Components/WidgetComponent.h"
 #include "Interaction/EnemyInterface.h"
@@ -20,6 +22,7 @@ class AURA_API AAuraEnemy : public AAuraCharacterBase, public IEnemyInterface
 
 public:
     AAuraEnemy();
+	virtual void PossessedBy(AController* NewController) override;
 
 	// IEnemyInterface
 	virtual void HighLightActor() override;
@@ -60,4 +63,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent> HealthBar;
+
+	UPROPERTY(EditAnywhere, Category="AI")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
+
+	UPROPERTY()
+	TObjectPtr<AAuraAIController> AuraAIController;
 };

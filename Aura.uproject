@@ -13,7 +13,8 @@
 				"GameplayAbilities",
 				"UMG",
 				"CoreUObject",
-				"EnhancedInput"
+				"EnhancedInput",
+				"AIModule"
 			]
 		}
 	],
@@ -100,15 +101,6 @@
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/91088fb17fb04b6b9eda41aaf8fda21e"
 		},
 		{
-			"Name": "BlackmagicMedia",
-			"Enabled": true,
-			"SupportedTargetPlatforms": [
-				"Win64",
-				"Linux"
-			],
-			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/433d28bdfb764ec5b2e60c4f45d5cb5c"
-		},
-		{
 			"Name": "AppleProResMedia",
 			"Enabled": true,
 			"SupportedTargetPlatforms": [
@@ -167,6 +159,10 @@
 		{
 			"Name": "MotionWarping",
 			"Enabled": true
+		},
+		{
+			"Name": "PlasticSourceControl",
+			"Enabled": false
 		}
 	],
 	"TargetPlatforms": [

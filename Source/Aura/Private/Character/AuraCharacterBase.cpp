@@ -14,6 +14,7 @@ AAuraCharacterBase::AAuraCharacterBase()
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
+	GetMesh()->SetGenerateOverlapEvents(true);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
@@ -73,11 +74,12 @@ void AAuraCharacterBase::ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& G
                                            const float Level) const
 {
 	check(GameplayEffectClass);
-	FGameplayEffectContextHandle EffectContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	const auto AuraAsc = Cast<UAuraAbilitySystemComponent>(GetAbilitySystemComponent());
+	auto EffectContextHandle = AuraAsc->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
-	const FGameplayEffectSpecHandle EffectSpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(
+	const auto EffectSpecHandle = AuraAsc->MakeOutgoingSpec(
 		GameplayEffectClass, Level, EffectContextHandle);
-	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+	AuraAsc->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
 }
 
 void AAuraCharacterBase::InitializeDefaultAttributes() const
@@ -91,7 +93,7 @@ void AAuraCharacterBase::AddCharacterAbilities() const
 {
 	if (!HasAuthority()) return;
 
-	UAuraAbilitySystemComponent* AuraASC = CastChecked<UAuraAbilitySystemComponent>(AbilitySystemComponent);
+	const auto AuraASC = CastChecked<UAuraAbilitySystemComponent>(AbilitySystemComponent);
 	AuraASC->AddCharacterAbilities(StartupAbilities);
 }
 
