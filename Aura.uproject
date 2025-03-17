@@ -163,10 +163,13 @@
 		{
 			"Name": "PlasticSourceControl",
 			"Enabled": false
+		},
+		{
+			"Name": "SlateModelViewViewModel",
+			"Enabled": true
 		}
 	],
 	"TargetPlatforms": [
-		"Windows",
-		"Android"
+		"Windows"
 	]
 }

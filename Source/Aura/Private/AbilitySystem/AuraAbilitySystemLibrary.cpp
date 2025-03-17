@@ -5,6 +5,7 @@
 
 #include "AuraAbilityTypes.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "Engine/OverlapResult.h"
 #include "Game/AuraGameModeBase.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
@@ -72,7 +73,8 @@ void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* World
 	Asc->ApplyGameplayEffectSpecToSelf(*VitalAttributesSpecHandle.Data.Get());
 }
 
-void UAuraAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContext, UAbilitySystemComponent* Asc, ECharacterClass CharacterClass)
+void UAuraAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContext, UAbilitySystemComponent* Asc,
+                                                     ECharacterClass CharacterClass)
 {
 	const auto CharacterClassInfo = GetCharacterClassInfo(WorldContext);
 	if (CharacterClassInfo == nullptr) return;
@@ -134,4 +136,45 @@ void UAuraAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& E
 	{
 		AuraEffectContext->SetIsCriticalHit(IsCritical);
 	}
+}
+
+void UAuraAbilitySystemLibrary::GetLivePlayerWithinRadius(const UObject* WorldContext,
+                                                          TArray<AActor*>& OutOverlappingActors,
+                                                          const TArray<AActor*>& ActorsToIgnore, float Radius,
+                                                          const FVector& SphereOrigin)
+{
+	FCollisionQueryParams SphereParams;
+	SphereParams.AddIgnoredActors(ActorsToIgnore);
+
+	TArray<FOverlapResult> Overlaps;
+	if (UWorld* World = GEngine->GetWorldFromContextObject(WorldContext, EGetWorldErrorMode::LogAndReturnNull))
+	{
+		// Get all object in radius
+		World->OverlapMultiByObjectType(Overlaps, SphereOrigin, FQuat::Identity,
+		                                FCollisionObjectQueryParams(
+			                                FCollisionObjectQueryParams::InitType::AllDynamicObjects),
+		                                FCollisionShape::MakeSphere(Radius), SphereParams);
+		
+		for (auto& OverlapResult : Overlaps)
+		{
+			if (OverlapResult.GetActor()->Implements<UCombatInterface>()
+				&& !ICombatInterface::Execute_IsDead(OverlapResult.GetActor()))
+			{
+				OutOverlappingActors.AddUnique(OverlapResult.GetActor());
+			}
+		}
+	}
+}
+
+bool UAuraAbilitySystemLibrary::IsFriend(AActor* FirstActor, AActor* SecondActor)
+{
+	const bool bFirstIsPlayer = FirstActor->ActorHasTag(FName("Player"));
+	const bool bSecondIsPlayer = SecondActor->ActorHasTag(FName("Player"));
+	const bool bFirstIsEnemy = FirstActor->ActorHasTag(FName("Enemy"));
+	const bool bSecondIsEnemy = SecondActor->ActorHasTag(FName("Enemy"));
+
+	if (bFirstIsPlayer && bSecondIsPlayer) return true;
+	if (bFirstIsEnemy && bSecondIsEnemy) return true;
+
+	return false;
 }
