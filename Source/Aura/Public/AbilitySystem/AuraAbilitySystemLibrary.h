@@ -53,5 +53,5 @@ public:
 	                                      const FVector& SphereOrigin);
 
 	UFUNCTION(BlueprintPure, category = "AuraAbilitySystemLibrary|GameplayMechanics")
-	static bool IsFriend(AActor* FirstActor, AActor* SecondActor);
+	static bool IsFriend(const AActor* FirstActor, const AActor* SecondActor);
 };

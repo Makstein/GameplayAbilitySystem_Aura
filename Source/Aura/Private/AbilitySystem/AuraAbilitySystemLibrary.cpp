@@ -166,8 +166,10 @@ void UAuraAbilitySystemLibrary::GetLivePlayerWithinRadius(const UObject* WorldCo
 	}
 }
 
-bool UAuraAbilitySystemLibrary::IsFriend(AActor* FirstActor, AActor* SecondActor)
+bool UAuraAbilitySystemLibrary::IsFriend(const AActor* FirstActor, const AActor* SecondActor)
 {
+	if (FirstActor == nullptr || SecondActor == nullptr) return false;
+	
 	const bool bFirstIsPlayer = FirstActor->ActorHasTag(FName("Player"));
 	const bool bSecondIsPlayer = SecondActor->ActorHasTag(FName("Player"));
 	const bool bFirstIsEnemy = FirstActor->ActorHasTag(FName("Enemy"));
