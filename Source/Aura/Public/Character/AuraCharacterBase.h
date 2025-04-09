@@ -58,6 +58,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName RightHandSocketName;
 
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName TailSocketName;
+
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
 
 	UPROPERTY()
