@@ -6,6 +6,8 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
+#include "AbilitySystem/Data/LevelUpInfo.h"
+#include "Player/AuraPlayerState.h"
 
 void UOverlayWidgetController::BroadcastInitialParams()
 {
@@ -18,7 +20,11 @@ void UOverlayWidgetController::BroadcastInitialParams()
 
 void UOverlayWidgetController::BindCallbacksToDependencies()
 {
-	const UAuraAttributeSet* AuraAttributes = Cast<UAuraAttributeSet>(AttributeSet);
+	UAuraAttributeSet* AuraAttributes = Cast<UAuraAttributeSet>(AttributeSet);
+	AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
+
+	AuraPlayerState->OnXPChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnXPChanged);
+	
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributes->GetHealthAttribute()).AddLambda(
 		[this](const FOnAttributeChangeData& Data)
 		{
@@ -64,6 +70,24 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
         				}
         			}
         		});
+	}
+}
+
+void UOverlayWidgetController::OnXPChanged(const int32 NewXP) const
+{
+	const AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
+	const ULevelUpInfo* LevelUpInfo = AuraPlayerState->LevelUpInfo;
+	checkf(LevelUpInfo, TEXT("Unable to find LevelUpInfo, fill out AuraPlayerState blueprint"));
+
+	const auto Level = LevelUpInfo->FindLevelForXP(NewXP);
+	if (const auto MaxLevel = LevelUpInfo->LevelUpInformation.Num(); Level <= MaxLevel && Level >= 0)
+	{
+		const auto LevelUpRequirement = LevelUpInfo->LevelUpInformation[Level].LevelUpRequirement;
+		const auto PreviousLevelUpRequirement = LevelUpInfo->LevelUpInformation[Level - 1].LevelUpRequirement;
+		const auto XPForThisLevel = NewXP - PreviousLevelUpRequirement;
+		const auto DeltaLevelRequirement = LevelUpRequirement - PreviousLevelUpRequirement;
+		const auto XPBarPrecent = static_cast<float>(XPForThisLevel) / DeltaLevelRequirement;
+		OnXPPercentChanged.Broadcast(XPBarPrecent);
 	}
 }
 

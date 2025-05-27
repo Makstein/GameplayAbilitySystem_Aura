@@ -153,7 +153,7 @@ void UAuraAbilitySystemLibrary::GetLivePlayerWithinRadius(const UObject* WorldCo
 		                                FCollisionObjectQueryParams(
 			                                FCollisionObjectQueryParams::InitType::AllDynamicObjects),
 		                                FCollisionShape::MakeSphere(Radius), SphereParams);
-		
+
 		for (auto& OverlapResult : Overlaps)
 		{
 			if (OverlapResult.GetActor()->Implements<UCombatInterface>()
@@ -168,7 +168,7 @@ void UAuraAbilitySystemLibrary::GetLivePlayerWithinRadius(const UObject* WorldCo
 bool UAuraAbilitySystemLibrary::IsFriend(const AActor* FirstActor, const AActor* SecondActor)
 {
 	if (FirstActor == nullptr || SecondActor == nullptr) return false;
-	
+
 	const bool bFirstIsPlayer = FirstActor->ActorHasTag(FName("Player"));
 	const bool bSecondIsPlayer = SecondActor->ActorHasTag(FName("Player"));
 	const bool bFirstIsEnemy = FirstActor->ActorHasTag(FName("Enemy"));
@@ -178,4 +178,16 @@ bool UAuraAbilitySystemLibrary::IsFriend(const AActor* FirstActor, const AActor*
 	if (bFirstIsEnemy && bSecondIsEnemy) return true;
 
 	return false;
+}
+
+int32 UAuraAbilitySystemLibrary::GetXPRewardByClassAndLevel(const UObject* WorldContextObject,
+                                                            ECharacterClass CharacterClass, int32 Level)
+{
+	const auto CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
+	if (CharacterClassInfo == nullptr) return 0;
+
+	const auto Info = CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
+	const auto XPReward = Info.XPReward.GetValueAtLevel(Level);
+
+	return static_cast<int32>(XPReward);
 }
