@@ -86,8 +86,17 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	auto SourceAvatar = SourceAsc->GetAvatarActor();
 	auto TargetAvatar = TargetAsc->GetAvatarActor();
-	auto SourceCombatInterface = Cast<ICombatInterface>(SourceAvatar);
-	auto TargetCombatInterface = Cast<ICombatInterface>(TargetAvatar);
+
+	int32 SourceCharacterLevel = 1.f;
+	if (SourceAvatar->Implements<UCombatInterface>())
+	{
+		SourceCharacterLevel = ICombatInterface::Execute_GetPlayerLevel(SourceAvatar);
+	}
+	int32 TargetCharacterLevel = 1.f;
+	if (TargetAvatar->Implements<UCombatInterface>())
+	{
+		TargetCharacterLevel = ICombatInterface::Execute_GetPlayerLevel(TargetAvatar);
+	}
 
 	const auto Spec = ExecutionParams.GetOwningSpec();
 
@@ -146,7 +155,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	CriticalResistance = FMath::Max<float>(0.f, CriticalResistance);
 	const FRealCurve* CriticalResistanceCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(
 		FName("CriticalResistance"), FString());
-	const float CriticalResistanceCoefficient = CriticalResistanceCurve->Eval(TargetCombatInterface->GetPlayerLevel());
+	const float CriticalResistanceCoefficient = CriticalResistanceCurve->Eval(TargetCharacterLevel);
 
 	float CriticalDamage = 0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalDamageDef, EvaluateParams,
@@ -171,13 +180,13 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	// Armor Penetration ignores a percentage of target's armor
 	const FRealCurve* ArmorPenetrationCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(
 		FName("ArmorPenetration"), FString());
-	const float ArmorPenetrationCoefficient = ArmorPenetrationCurve->Eval(SourceCombatInterface->GetPlayerLevel());
+	const float ArmorPenetrationCoefficient = ArmorPenetrationCurve->Eval(SourceCharacterLevel);
 	const float EffectiveArmor = TargetArmor * (100.f - SourceArmorPenetration * ArmorPenetrationCoefficient) / 100.f;
 
 	// Armor ignores a percentage of incoming Damage
 	const FRealCurve* EffectiveArmorCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(
 		FName("EffectiveArmor"), FString());
-	const float EffectiveArmorCoefficient = EffectiveArmorCurve->Eval(TargetCombatInterface->GetPlayerLevel());
+	const float EffectiveArmorCoefficient = EffectiveArmorCurve->Eval(TargetCharacterLevel);
 	Damage *= (100.f - EffectiveArmor * EffectiveArmorCoefficient) / 100.f;
 
 	const FGameplayModifierEvaluatedData EvaluatedData(UAuraAttributeSet::GetIncomingDamageAttribute(),
