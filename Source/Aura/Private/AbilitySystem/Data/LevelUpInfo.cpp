@@ -9,7 +9,7 @@ int32 ULevelUpInfo::FindLevelForXP(const int32 XP) const
 	{
 		if (XP < LevelUpInformation[i].LevelUpRequirement)
 		{
-			return i - 1;
+			return i - 1 >= 1 ? i - 1 : 1;
 		}
 	}
 	return 1;
