@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Camera/CameraComponent.h"
 #include "Character/AuraCharacterBase.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Interaction/PlayerInterface.h"
 #include "AuraCharacter.generated.h"
 
@@ -35,6 +37,18 @@ public:
 	// ICombatInterface
 	virtual int32 GetPlayerLevel_Implementation() override;
 	// End ICombatInterface
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UNiagaraComponent> LevelUpNiagaraComponent;
 private:
 	virtual void InitAbilityActorInfo() override;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UCameraComponent> TopDownCameraComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USpringArmComponent> CameraBoom;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastLevelUpParticles() const;
 };
