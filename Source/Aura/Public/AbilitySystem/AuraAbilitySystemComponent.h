@@ -9,7 +9,7 @@
 
 class UAuraAbilitySystemComponent;
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContainer&);
-DECLARE_MULTICAST_DELEGATE_OneParam(FAbilityGiven, UAuraAbilitySystemComponent*);
+DECLARE_MULTICAST_DELEGATE(FAbilityGiven);
 DECLARE_DELEGATE_OneParam(FForeachAbility, const FGameplayAbilitySpec&);
 
 /**
@@ -31,7 +31,7 @@ public:
 	bool bStartupAbilitiesGiven = false;
 
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);
-	void AbilityInputTagPressed(const FGameplayTag& InputTag);
+	static void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 	void ForeachAbility(const FForeachAbility& Delegate);
 

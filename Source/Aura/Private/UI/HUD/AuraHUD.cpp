@@ -27,6 +27,18 @@ UAttributeMenuController* AAuraHUD::GetAttributeMenuController(const FWidgetCont
 	return AttributeMenuController;
 }
 
+USpellMenuWidgetController* AAuraHUD::GetSpellMenuWidgetController(const FWidgetControllerParams& Params)
+{
+	if (SpellMenuController == nullptr)
+	{
+		SpellMenuController = NewObject<USpellMenuWidgetController>(this, SpellMenuControllerClass);
+		SpellMenuController->SetWidgetControllerParams(Params);
+		SpellMenuController->BindCallbacksToDependencies();
+	}
+
+	return SpellMenuController;
+}
+
 void AAuraHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
 {
 	checkf(OverlayWidgetClass, TEXT("OverlayWidgetClass undefined, please fill out BP_AuraHUD!"));
