@@ -11,6 +11,7 @@ class UAuraAbilitySystemComponent;
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContainer&);
 DECLARE_MULTICAST_DELEGATE(FAbilityGiven);
 DECLARE_DELEGATE_OneParam(FForeachAbility, const FGameplayAbilitySpec&);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FAbilityStatusChanged, const FGameplayTag&, const FGameplayTag&);
 
 /**
  * 
@@ -25,6 +26,7 @@ public:
 
 	FEffectAssetTags EffectAssetTags;
 	FAbilityGiven AbilityGivenDelegate;
+	FAbilityStatusChanged AbilityStatusChangedDelegate;
 
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
 	void AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& PassiveAbilities);
@@ -39,10 +41,14 @@ public:
 	static FGameplayTag GetInputTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
 	static FGameplayTag GetStatusFromSpec(const FGameplayAbilitySpec& AbilitySpec);
 
+	FGameplayAbilitySpec* GetSpecFromAbilityTag(const FGameplayTag& AbilityTag);
+
 	void UpgradeAttributes(const FGameplayTag& AttributeTag);
 
 	UFUNCTION(Server, Reliable)
 	void ServerUpgradeAttributes(const FGameplayTag& AttributeTag);
+
+	void UpdateAbilityStatues(int32 Level);
 
 protected:
 
@@ -51,4 +57,13 @@ protected:
 	UFUNCTION(Client, Reliable)
 	void ClientEffectApplied(UAbilitySystemComponent* Target, const FGameplayEffectSpec& SpecApplied,
 	                   FActiveGameplayEffectHandle ActiveHandle);
+
+	UFUNCTION(Client, Reliable)
+	void ClientUpdateAbilityStatues(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag);
 };
+
+inline void UAuraAbilitySystemComponent::ClientUpdateAbilityStatues_Implementation(const FGameplayTag& AbilityTag,
+	const FGameplayTag& StatusTag)
+{
+	AbilityStatusChangedDelegate.Broadcast(AbilityTag, StatusTag);
+}
