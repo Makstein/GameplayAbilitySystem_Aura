@@ -28,6 +28,12 @@ void UAuraDamageGameplayAbility::CauseDamage(AActor* TargetActor)
 		*DamageSpecHandle.Data.Get(), UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor));
 }
 
+float UAuraDamageGameplayAbility::GetDamageByDamageType(const float InLevel, const FGameplayTag& DamageTypeTag)
+{
+	checkf(DamageTypes.Contains(DamageTypeTag), TEXT("GameplayAbility [%s] does not contains DamageType [%s]"), *GetNameSafe(this), *DamageTypeTag.ToString());
+	return DamageTypes[DamageTypeTag].GetValueAtLevel(InLevel);
+}
+
 FTaggedMontage UAuraDamageGameplayAbility::GetRandomTaggedMontageFromArray(const TArray<FTaggedMontage>& MontageArray)
 {
 	if (MontageArray.Num() == 0) return FTaggedMontage{};
