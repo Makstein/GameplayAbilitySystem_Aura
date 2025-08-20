@@ -22,5 +22,5 @@ public:
 	FOnPlayerStateChangedSignature SpellPointChanged;
 
 	UFUNCTION(BlueprintCallable)
-	void SpendPointsButtonPressed();
+	void SpendPointsButtonPressed(const FGameplayTag& SelectedAbilityTag);
 };

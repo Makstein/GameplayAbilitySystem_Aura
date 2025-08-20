@@ -11,7 +11,7 @@ class UAuraAbilitySystemComponent;
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContainer&);
 DECLARE_MULTICAST_DELEGATE(FAbilityGiven);
 DECLARE_DELEGATE_OneParam(FForeachAbility, const FGameplayAbilitySpec&);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FAbilityStatusChanged, const FGameplayTag&, const FGameplayTag&);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FAbilityStatusChanged, const FGameplayTag&, const FGameplayTag&, const int32);
 
 /**
  * 
@@ -50,6 +50,9 @@ public:
 
 	void UpdateAbilityStatues(int32 Level);
 
+	UFUNCTION(Server, Reliable)
+	void ServerSpendSpellPoints(const FGameplayTag& AbilityTag);
+
 protected:
 
 	virtual void OnRep_ActivateAbilities() override;
@@ -59,11 +62,11 @@ protected:
 	                   FActiveGameplayEffectHandle ActiveHandle);
 
 	UFUNCTION(Client, Reliable)
-	void ClientUpdateAbilityStatues(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag);
+	void ClientUpdateAbilityStatues(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, int32 AbilityLevel);
 };
 
 inline void UAuraAbilitySystemComponent::ClientUpdateAbilityStatues_Implementation(const FGameplayTag& AbilityTag,
-	const FGameplayTag& StatusTag)
+	const FGameplayTag& StatusTag, const int32 AbilityLevel)
 {
-	AbilityStatusChangedDelegate.Broadcast(AbilityTag, StatusTag);
+	AbilityStatusChangedDelegate.Broadcast(AbilityTag, StatusTag, AbilityLevel);
 }
