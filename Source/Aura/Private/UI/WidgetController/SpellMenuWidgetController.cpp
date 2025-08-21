@@ -71,6 +71,12 @@ void USpellMenuWidgetController::SpellGlobeButtonPressed(const FGameplayTag& Sel
 	SpellGlobeSelectedDelegate.Broadcast(bSpendPointsButtonEnabled, bEquipButtonEnabled, Description, NextLevelDescription);
 }
 
+void USpellMenuWidgetController::GlobeDeselect()
+{
+	SelectedAbility.StatusTag = FAuraGameplayTags::Get().Abilities_Status_Locked;
+	SpellGlobeSelectedDelegate.Broadcast(false, false, FString(), FString());
+}
+
 void USpellMenuWidgetController::ShouldEnableButton(const FGameplayTag& SelectedStatusTag, int32 CurrentSpellPoints,
                                                     bool& bSpendPointsButtonEnabled, bool& bEquipButtonEnabled)
 {

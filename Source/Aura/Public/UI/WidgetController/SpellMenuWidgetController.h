@@ -43,6 +43,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SpellGlobeButtonPressed(const FGameplayTag& SelectedAbilityTag, const FGameplayTag& SelectedStatusTag);
 
+	UFUNCTION(BlueprintCallable)
+	void GlobeDeselect();
+
 private:
-	void ShouldEnableButton(const FGameplayTag& SelectedStatusTag, int32 CurrentSpellPoints, bool& bSpendPointsButtonEnabled, bool& bEquipButtonEnabled);
+	static void ShouldEnableButton(const FGameplayTag& SelectedStatusTag, int32 CurrentSpellPoints, bool& bSpendPointsButtonEnabled, bool& bEquipButtonEnabled);
 };
