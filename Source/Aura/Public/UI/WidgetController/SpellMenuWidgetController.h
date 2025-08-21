@@ -10,6 +10,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FSpellGlobeSelectedSignature, bool
 	bool, bEquipButtonEnabled,
 	FString, DescriptionString,
 	FString, NextLevelDescriptionString);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWaitForEquipSelectionSignature, const FGameplayTag&, SelectedAbilityTypeTag);
 
 struct FSelectedAbility
 {
@@ -35,6 +36,12 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerStateChangedSignature SpellPointChanged;
 
+	UPROPERTY(BlueprintAssignable)
+	FWaitForEquipSelectionSignature WaitForEquipSelectionDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FWaitForEquipSelectionSignature StopWaitForEquipSelectionDelegate;
+
 	FSelectedAbility SelectedAbility;
 
 	UFUNCTION(BlueprintCallable)
@@ -46,6 +53,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void GlobeDeselect();
 
+	UFUNCTION(BlueprintCallable)
+	void EquipButtonPressed();
+
 private:
 	static void ShouldEnableButton(const FGameplayTag& SelectedStatusTag, int32 CurrentSpellPoints, bool& bSpendPointsButtonEnabled, bool& bEquipButtonEnabled);
+	bool bWaitingForEquipSelection = false;
+	FGameplayTag SelectedSlot;
 };
