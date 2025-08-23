@@ -128,6 +128,24 @@ FGameplayTag UAuraAbilitySystemComponent::GetStatusFromSpec(const FGameplayAbili
 	return FGameplayTag();
 }
 
+FGameplayTag UAuraAbilitySystemComponent::GetStatusFromAbilityTag(const FGameplayTag& AbilityTag)
+{
+	if (const FGameplayAbilitySpec* Spec = GetSpecFromAbilityTag(AbilityTag))
+	{
+		return GetStatusFromSpec(*Spec);
+	}
+	return FGameplayTag();
+}
+
+FGameplayTag UAuraAbilitySystemComponent::GetInputTagAbilityTag(const FGameplayTag& AbilityTag)
+{
+	if (const FGameplayAbilitySpec* Spec = GetSpecFromAbilityTag(AbilityTag))
+	{
+		return GetInputTagFromSpec(*Spec);
+	}
+	return FGameplayTag();
+}
+
 FGameplayAbilitySpec* UAuraAbilitySystemComponent::GetSpecFromAbilityTag(const FGameplayTag& AbilityTag)
 {
 	FScopedAbilityListLock ActiveScopeLock(*this);
@@ -213,8 +231,42 @@ void UAuraAbilitySystemComponent::ServerSpendSpellPoints_Implementation(const FG
 	}
 }
 
+void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(const FGameplayTag& AbilityTag,
+	const FGameplayTag& SlotTag)
+{
+	if (FGameplayAbilitySpec* Spec = GetSpecFromAbilityTag(AbilityTag))
+	{
+	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
+		const FGameplayTag PrevSlot = GetInputTagFromSpec(*Spec);
+		const FGameplayTag Status = GetStatusFromSpec(*Spec);
+
+		const bool bStatusValid = Status == GameplayTags.Abilities_Status_Unlocked ||
+			Status == GameplayTags.Abilities_Status_Equipped;
+		if (bStatusValid)
+		{
+			ClearAbilitiesOfSlot(SlotTag);
+			ClearSlot(Spec);
+			Spec->GetDynamicSpecSourceTags().AddTag(SlotTag);
+			if (Status.MatchesTagExact(GameplayTags.Abilities_Status_Unlocked))
+			{
+				Spec->GetDynamicSpecSourceTags().RemoveTag(GameplayTags.Abilities_Status_Unlocked);
+				Spec->GetDynamicSpecSourceTags().AddTag(GameplayTags.Abilities_Status_Equipped);
+			}
+			MarkAbilitySpecDirty(*Spec);
+		}
+		ClientEquipAbility(AbilityTag, SlotTag, GameplayTags.Abilities_Status_Equipped, PrevSlot);
+	}
+}
+
+void UAuraAbilitySystemComponent::ClientEquipAbility(const FGameplayTag& AbilityTag, const FGameplayTag& SlotTag,
+	const FGameplayTag& Status, const FGameplayTag& PrevSlot)
+{
+	// Order is different from video
+	AbilityEquippedDelegate.Broadcast(AbilityTag, SlotTag, Status, PrevSlot);
+}
+
 bool UAuraAbilitySystemComponent::GetDescriptionsByAbilityTag(const FGameplayTag& AbilityTag, FString& OutDescription,
-	FString& OutNextLevelDescription)
+                                                              FString& OutNextLevelDescription)
 {
 	if (const FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
 	{
@@ -228,6 +280,43 @@ bool UAuraAbilitySystemComponent::GetDescriptionsByAbilityTag(const FGameplayTag
 	const UAbilityInfo* AbilityInfo = UAuraAbilitySystemLibrary::GetAbilityInfo(GetAvatarActor());
 	OutDescription = UAuraGameplayAbility::GetLockedDescription(AbilityInfo->FindAbilityInfoForTag(AbilityTag).LevelRequirement);
 	OutNextLevelDescription = FString();
+	return false;
+}
+
+void UAuraAbilitySystemComponent::ClearSlot(FGameplayAbilitySpec* Spec)
+{
+	const FGameplayTag Slot = GetInputTagFromSpec(*Spec);
+	Spec->GetDynamicSpecSourceTags().RemoveTag(Slot);
+	const FGameplayTag Status = GetStatusFromSpec(*Spec);
+	if (Status.MatchesTagExact(FAuraGameplayTags::Get().Abilities_Status_Equipped))
+	{
+		Spec->GetDynamicSpecSourceTags().RemoveTag(FAuraGameplayTags::Get().Abilities_Status_Equipped);
+		Spec->GetDynamicSpecSourceTags().AddTag(FAuraGameplayTags::Get().Abilities_Status_Unlocked);
+	}
+	MarkAbilitySpecDirty(*Spec);
+}
+
+void UAuraAbilitySystemComponent::ClearAbilitiesOfSlot(const FGameplayTag& SlotTag)
+{
+	FScopedAbilityListLock ActiveScopeLock(*this);
+	for (auto& AbilitySpec : GetActivatableAbilities())
+	{
+		if (IsAbilityHasSlot(&AbilitySpec, SlotTag))
+		{
+			ClearSlot(&AbilitySpec);
+		}
+	}
+}
+
+bool UAuraAbilitySystemComponent::IsAbilityHasSlot(FGameplayAbilitySpec* Spec, const FGameplayTag& SlotTag)
+{
+	for (auto Tag : Spec->GetDynamicSpecSourceTags())
+	{
+		if (Tag.MatchesTagExact(SlotTag))
+		{
+			return true;
+		}
+	}
 	return false;
 }
 

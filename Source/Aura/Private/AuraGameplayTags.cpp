@@ -112,6 +112,9 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Abilities_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.HitReact"), FString("HitReact Ability Tag"));
 
+	GameplayTags.Abilities_None = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.None"), FString("None Ability Tag"));
+
 	GameplayTags.Abilities_Status_Locked = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Status.Locked"), FString("Locked status"));
 

@@ -57,6 +57,8 @@ public:
 
 	FGameplayTag Abilities_HitReact;
 
+	FGameplayTag Abilities_None;
+
 	FGameplayTag Abilities_Status_Locked;
 	FGameplayTag Abilities_Status_Eligible;
 	FGameplayTag Abilities_Status_Unlocked;
