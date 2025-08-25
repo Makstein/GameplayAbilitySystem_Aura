@@ -3,11 +3,12 @@
 
 #include "AbilitySystem/Abilities/AuraFireBolt.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AuraGameplayTags.h"
 
 FString UAuraFireBolt::GetDescription(int32 Level)
 {
-	const int32 Damage = GetDamageByDamageType(Level, FAuraGameplayTags::Get().Damage_Fire);
+	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float ManaCost = FMath::Abs(GetManaCost(Level));
 	const float Cooldown = GetCooldown(Level);
 	if (Level == 1)
@@ -18,7 +19,7 @@ FString UAuraFireBolt::GetDescription(int32 Level)
 			"\n<Small>ManaCost: </><ManaCost>%.1f</>"
 			"\n<Small>Cooldown: </><Cooldown>%.1f</>"
 			"\n\n<Default>Launches a bolt of fire, exploding on impact and dealing: </><Damage>%d</><Default> fire damage and chance to burn</>"
-			), ManaCost, Cooldown, Damage);
+			), ManaCost, Cooldown, ScaledDamage);
 	}
 	else
 	{
@@ -28,13 +29,13 @@ FString UAuraFireBolt::GetDescription(int32 Level)
 			"\n<Small>ManaCost: </><ManaCost>%.1f</>"
 			"\n<Small>Cooldown: </><Cooldown>%.1f</>"
 			"\n\n<Default>Launches %d bolts of fire, exploding on impact and dealing: </><Damage>%d</><Default> fire damage and chance to burn</>"
-			), Level, ManaCost, Cooldown, FMath::Min(Level, NumProjectiles), Damage);
+			), Level, ManaCost, Cooldown, FMath::Min(Level, NumProjectiles), ScaledDamage);
 	}
 }
 
 FString UAuraFireBolt::GetNextLevelDescription(int32 Level)
 {
-	const int32 Damage = GetDamageByDamageType(Level, FAuraGameplayTags::Get().Damage_Fire);
+	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float ManaCost = FMath::Abs(GetManaCost(Level));
 	const float Cooldown = GetCooldown(Level);
 	return FString::Printf(
@@ -43,5 +44,5 @@ FString UAuraFireBolt::GetNextLevelDescription(int32 Level)
 			"\n<Small>ManaCost: </><ManaCost>%.1f</>"
 			"\n<Small>Cooldown: </><Cooldown>%.1f</>"
 			"\n\n<Default>Launches %d bolts of fire, exploding on impact and dealing: </><Damage>%d</><Default> fire damage and chance to burn</>"
-			), Level, ManaCost, Cooldown, FMath::Min(Level, NumProjectiles), Damage);
+			), Level, ManaCost, Cooldown, FMath::Min(Level, NumProjectiles), ScaledDamage);
 }

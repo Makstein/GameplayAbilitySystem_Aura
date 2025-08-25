@@ -51,12 +51,8 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 	const FGameplayEffectSpecHandle SpecHandle = SourceAsc->MakeOutgoingSpec(
 		DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
 
-	// Get value from damage curve
-	for (auto& Pair : DamageTypes)
-	{
-		const float ScaledDamage = Pair.Value.GetValueAtLevel(GetAbilityLevel());
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, Pair.Key, ScaledDamage);
-	}
+	const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel());
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DamageTypeTag, ScaledDamage);
 
 	Projectile->DamageEffectSpecHandle = SpecHandle;
 	Projectile->FinishSpawning(SpawnTransform);

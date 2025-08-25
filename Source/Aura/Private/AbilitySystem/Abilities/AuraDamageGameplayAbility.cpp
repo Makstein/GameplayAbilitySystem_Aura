@@ -18,20 +18,11 @@ void UAuraDamageGameplayAbility::CauseDamage(AActor* TargetActor)
 	}
 
 	// Set the damage types that this ability has
-	for (auto Pair : DamageTypes)
-	{
-		const float ScaledValue = Pair.Value.GetValueAtLevel(GetAbilityLevel());
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, Pair.Key, ScaledValue);
-	}
+	const float ScaledValue = Damage.GetValueAtLevel(GetAbilityLevel());
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageSpecHandle, DamageTypeTag, ScaledValue);
 
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(
 		*DamageSpecHandle.Data.Get(), UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor));
-}
-
-float UAuraDamageGameplayAbility::GetDamageByDamageType(const float InLevel, const FGameplayTag& DamageTypeTag)
-{
-	checkf(DamageTypes.Contains(DamageTypeTag), TEXT("GameplayAbility [%s] does not contains DamageType [%s]"), *GetNameSafe(this), *DamageTypeTag.ToString());
-	return DamageTypes[DamageTypeTag].GetValueAtLevel(InLevel);
 }
 
 FTaggedMontage UAuraDamageGameplayAbility::GetRandomTaggedMontageFromArray(const TArray<FTaggedMontage>& MontageArray)
