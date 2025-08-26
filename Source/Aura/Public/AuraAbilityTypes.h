@@ -74,6 +74,15 @@ public:
 	void SetIsCriticalHit(const bool Value) { bIsCriticalHit = Value; }
 	bool IsBlockedHit() const { return bIsBlockedHit; }
 	void SetIsBlockedHit(const bool Value) { bIsBlockedHit = Value; }
+	bool IsSuccessfulDebuff() const { return bIsSuccessfulDebuff; }
+	void SetIsSuccessfulDebuff(const bool Value) { bIsSuccessfulDebuff = Value; }
+	float GetDebuffDamage() const { return DebuffDamage; }
+	void SetDebuffDamage(const float Value) { DebuffDamage = Value; }
+	float GetDebuffFrequency() const { return DebuffFrequency; }
+	void SetDebuffFrequency(const float Value) { DebuffFrequency = Value; }
+	float GetDebuffDuration() const { return DebuffDuration; }
+	void SetDebuffDuration(const float Value) { DebuffDuration = Value; }
+	TSharedPtr<FGameplayTag> GetDamageType() const { return DamageType; }
 
 protected:
 	UPROPERTY()
@@ -81,6 +90,20 @@ protected:
 
 	UPROPERTY()
 	bool bIsBlockedHit = false;
+
+	UPROPERTY()
+	bool bIsSuccessfulDebuff = false;
+
+	UPROPERTY()
+	float DebuffDamage = 0.f;
+
+	UPROPERTY()
+	float DebuffFrequency = 0.f;
+
+	UPROPERTY()
+	float DebuffDuration = 0.f;
+
+	TSharedPtr<FGameplayTag> DamageType;
 };
 
 template<>
