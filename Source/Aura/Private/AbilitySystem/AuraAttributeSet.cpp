@@ -106,10 +106,9 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& EffectProp
 		}
 		else
 		{
-			// TODO: handle death impulse here
 			if (const auto CombatInterface = Cast<ICombatInterface>(EffectProperties.TargetAvatar))
 			{
-				CombatInterface->Die();
+				CombatInterface->Die(UAuraAbilitySystemLibrary::GetDeathImpulse(EffectProperties.EffectContextHandle));
 			}
 			SendXPEvent(EffectProperties);
 		}
