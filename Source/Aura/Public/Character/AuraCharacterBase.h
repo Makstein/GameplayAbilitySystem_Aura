@@ -7,6 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "NiagaraSystem.h"
 #include "AbilitySystem/Abilities/AuraGameplayAbility.h"
+#include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 #include "Interaction/CombatInterface.h"
 #include "AuraCharacterBase.generated.h"
 
@@ -49,6 +50,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="Combat")
 	TArray<FTaggedMontage> AttackMontages;
+
+	UPROPERTY(EditAnywhere, Category="Combat")
+	UDebuffNiagaraComponent* BurnDebuffComponent;
 
 protected:
 	// Called when the game starts or when spawned
