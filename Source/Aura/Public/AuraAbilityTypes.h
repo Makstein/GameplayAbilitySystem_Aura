@@ -42,6 +42,9 @@ struct FDamageEffectParams
 
 	UPROPERTY()
 	float DebuffDuration = 0.f;
+
+	UPROPERTY()
+	float DeathImpulseMagnitude = 60.f;
 };
 
 USTRUCT(BlueprintType)
@@ -105,6 +108,9 @@ protected:
 	float DebuffDuration = 0.f;
 
 	TSharedPtr<FGameplayTag> DamageType;
+
+	UPROPERTY()
+	FVector DeathImpulse = FVector::ZeroVector;
 };
 
 template<>
