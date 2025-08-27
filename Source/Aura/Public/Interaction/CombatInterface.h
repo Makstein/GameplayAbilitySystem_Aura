@@ -10,6 +10,9 @@
 
 class UNiagaraSystem;
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegisterdSignature, UAbilitySystemComponent*)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeathSignature, AActor*, DeadActor);
+
 USTRUCT(BlueprintType)
 struct FTaggedMontage
 {
@@ -80,4 +83,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	ECharacterClass GetCharacterClass();
+
+	virtual FOnASCRegisterdSignature GetOnASCRegisteredDelegate() = 0;
+	virtual FOnDeathSignature GetOnDeathDelegate() = 0;
 };

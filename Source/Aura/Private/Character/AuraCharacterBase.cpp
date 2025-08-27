@@ -181,3 +181,13 @@ ECharacterClass AAuraCharacterBase::GetCharacterClass_Implementation()
 {
 	return CharacterClass;
 }
+
+FOnASCRegisterdSignature AAuraCharacterBase::GetOnASCRegisteredDelegate()
+{
+	return OnASCRegistered;
+}
+
+FOnDeathSignature AAuraCharacterBase::GetOnDeathDelegate()
+{
+	return OnDeath;
+}
