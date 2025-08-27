@@ -83,6 +83,7 @@ public:
 	float GetDebuffDuration() const { return DebuffDuration; }
 	void SetDebuffDuration(const float Value) { DebuffDuration = Value; }
 	TSharedPtr<FGameplayTag> GetDamageType() const { return DamageType; }
+	void SetDamageType(TSharedPtr<FGameplayTag> Value) { DamageType = Value; }
 
 protected:
 	UPROPERTY()
