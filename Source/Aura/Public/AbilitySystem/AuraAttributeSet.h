@@ -234,7 +234,7 @@ private:
 	void SendXPEvent(const FEffectProperties& Props);
 	void HandleIncomingDamage(const FEffectProperties& EffectProperties);
 	void HandleIncomingXP(const FEffectProperties& EffectProperties);
-	void Debuff(const FEffectProperties& EffectProperties);
+	static void Debuff(const FEffectProperties& EffectProperties);
 
 	bool bTopOffHealth = false;
 	bool bTopOffMana = false;
