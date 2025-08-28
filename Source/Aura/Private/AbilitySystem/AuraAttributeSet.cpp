@@ -8,12 +8,10 @@
 #include "GameplayEffectTypes.h"
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
-#include "Aura/AuraLogChannel.h"
 #include "GameFramework/Character.h"
 #include "GameplayEffectComponents/TargetTagsGameplayEffectComponent.h"
 #include "Interaction/CombatInterface.h"
 #include "Interaction/PlayerInterface.h"
-#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/AuraPlayerController.h"
 
@@ -108,7 +106,8 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& EffectProp
 		{
 			if (const auto CombatInterface = Cast<ICombatInterface>(EffectProperties.TargetAvatar))
 			{
-				CombatInterface->Die(UAuraAbilitySystemLibrary::GetDeathImpulse(EffectProperties.EffectContextHandle));
+				const auto Impulse = UAuraAbilitySystemLibrary::GetDeathImpulse(EffectProperties.EffectContextHandle);
+				CombatInterface->Die(Impulse);
 			}
 			SendXPEvent(EffectProperties);
 		}
