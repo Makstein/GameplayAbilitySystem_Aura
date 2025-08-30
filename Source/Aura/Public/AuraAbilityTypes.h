@@ -48,6 +48,15 @@ struct FDamageEffectParams
 
 	UPROPERTY()
 	FVector DeathImpulse = FVector::ZeroVector;
+
+	UPROPERTY()
+	float KnockbackForceMagnitude = 0.f;
+
+	UPROPERTY()
+	float KnockbackChance = 0.f;
+
+	UPROPERTY()
+	FVector KnockbackForce = FVector::ZeroVector;
 };
 
 USTRUCT(BlueprintType)
@@ -92,6 +101,8 @@ public:
 	void SetDamageType(TSharedPtr<FGameplayTag> Value) { DamageType = Value; }
 	FVector GetDeathImpulse() const { return DeathImpulse; }
 	void SetDeathImpulse(const FVector& Value) { DeathImpulse = Value; }
+	FVector GetKnockbackForce() const { return KnockbackForce; }
+	void SetKnockbackForce(const FVector& Value) { KnockbackForce = Value; }
 
 protected:
 	UPROPERTY()
@@ -116,6 +127,9 @@ protected:
 
 	UPROPERTY()
 	FVector DeathImpulse = FVector::ZeroVector;
+
+	UPROPERTY()
+	FVector KnockbackForce = FVector::ZeroVector;
 };
 
 template<>
