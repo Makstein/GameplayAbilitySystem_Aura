@@ -361,6 +361,46 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyDamageEffect(const 
 	return EffectContextHandle;
 }
 
+TArray<FRotator> UAuraAbilitySystemLibrary::EvenlySpacedRotators(const FVector& Forward, const FVector& Axis, const float Spread, const int32 NumRotators)
+{
+	TArray<FRotator> Rotators;
+	if (NumRotators == 1)
+	{
+		Rotators.Add(Forward.Rotation());
+		return Rotators;
+	}
+
+	const auto LeftOfSpread = Forward.RotateAngleAxis(-Spread / 2.f, Axis);
+	const auto DeltaSpread = Spread / (NumRotators - 1);
+	Rotators.Reserve(NumRotators);
+	for (int32 i = 0; i < NumRotators; ++i)
+	{
+		const FVector Direction = LeftOfSpread.RotateAngleAxis(DeltaSpread * i, Axis);
+		Rotators.Add(Direction.Rotation());
+	}
+	return Rotators;
+}
+
+TArray<FVector> UAuraAbilitySystemLibrary::EvenlySpacedVectors(const FVector& Forward, const FVector& Axis, float Spread, int32 NumVectors)
+{
+	TArray<FVector> Rotators;
+	if (NumVectors == 1)
+	{
+		Rotators.Add(Forward);
+		return Rotators;
+	}
+
+	const auto LeftOfSpread = Forward.RotateAngleAxis(Spread / 2.f, Axis);
+	const auto DeltaSpread = Spread / (NumVectors - 1);
+	Rotators.Reserve(NumVectors);
+	for (int32 i = 0; i < NumVectors; ++i)
+	{
+		const FVector Direction = LeftOfSpread.RotateAngleAxis(DeltaSpread * i, Axis);
+		Rotators.Add(Direction);
+	}
+	return Rotators;
+}
+
 int32 UAuraAbilitySystemLibrary::GetXPRewardByClassAndLevel(const UObject* WorldContextObject,
                                                             ECharacterClass CharacterClass, int32 Level)
 {
