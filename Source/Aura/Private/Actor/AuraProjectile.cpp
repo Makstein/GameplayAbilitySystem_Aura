@@ -49,12 +49,18 @@ void AAuraProjectile::OnHit()
 	if (LoopSoundComponent)
 	{
 		LoopSoundComponent->Stop();
+		LoopSoundComponent->DestroyComponent();
 	}
 	bHit = true;
 }
 
 void AAuraProjectile::Destroyed()
 {
+	if (LoopSoundComponent)
+	{
+		LoopSoundComponent->Stop();
+		LoopSoundComponent->DestroyComponent();
+	}
 	if (!bHit && !HasAuthority()) OnHit();
 	Super::Destroyed();
 }

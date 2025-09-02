@@ -82,10 +82,13 @@ void UAuraAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& In
 
 	for (auto& AbilitySpec : GetActivatableAbilities())
 	{
-		if (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag) && AbilitySpec.IsActive())
+		const auto& Tags = AbilitySpec.GetDynamicSpecSourceTags();
+		if (Tags.HasTagExact(InputTag) && AbilitySpec.IsActive())
 		{
 			AbilitySpecInputReleased(AbilitySpec);
-			InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, AbilitySpec.Handle, AbilitySpec.ActivationInfo.GetActivationPredictionKey());
+			TArray<UGameplayAbility*> Instances = AbilitySpec.GetAbilityInstances();
+			const FGameplayAbilityActivationInfo& ActivationInfo = Instances.Last() -> GetCurrentActivationInfoRef();
+			InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, AbilitySpec.Handle, ActivationInfo.GetActivationPredictionKey());
 		}
 	}
 }
